@@ -1,0 +1,102 @@
+{
+  "version": 6,
+  "profiles": [
+    {
+      "id": 1,
+      "name": "Default",
+      "fontName": "monospace",
+      "fontSize": 12,
+      "foregroundIndex": 7,
+      "backgroundIndex": 0,
+      "cursorBlinkEnabled": true,
+      "bellEnabled": true,
+      "bellVolume": 0.5,
+      "bellVibrate": true,
+      "encoding": "UTF-8",
+      "keyboardProfile": "builtin_default",
+      "defaultKey": "builtin_default"
+    }
+  ],
+  "hosts": [
+    {
+      "id": 1,
+      "nickname": "production-web",
+      "protocol": "ssh",
+      "username": "deploy",
+      "hostname": "prod.example.com",
+      "port": 22,
+      "useKeys": true,
+      "useAuthAgent": "no",
+      "postLogin": null,
+      "pubkeyId": -1,
+      "wantSession": true,
+      "compression": false,
+      "stayConnected": false,
+      "quickDisconnect": false,
+      "scrollbackLines": 140,
+      "useCtrlAltAsMetaKey": false,
+      "jumpHostId": 2,
+      "profileId": 1
+    },
+    {
+      "id": 2,
+      "nickname": "bastion",
+      "protocol": "ssh",
+      "username": "admin",
+      "hostname": "bastion.example.com",
+      "port": 2222,
+      "useKeys": true,
+      "useAuthAgent": "no",
+      "postLogin": null,
+      "pubkeyId": -1,
+      "wantSession": true,
+      "compression": true,
+      "stayConnected": false,
+      "quickDisconnect": false,
+      "scrollbackLines": 140,
+      "useCtrlAltAsMetaKey": false,
+      "jumpHostId": null,
+      "profileId": 1
+    },
+    {
+      "id": 3,
+      "nickname": "staging-db",
+      "protocol": "ssh",
+      "username": "dbadmin",
+      "hostname": "staging-db.example.com",
+      "port": 22,
+      "useKeys": true,
+      "useAuthAgent": "no",
+      "postLogin": null,
+      "pubkeyId": -1,
+      "wantSession": true,
+      "compression": false,
+      "stayConnected": false,
+      "quickDisconnect": false,
+      "scrollbackLines": 140,
+      "useCtrlAltAsMetaKey": false,
+      "jumpHostId": null,
+      "profileId": 1
+    }
+  ],
+  "port_forwards": [
+    {
+      "id": 1,
+      "hostId": 3,
+      "nickname": "MySQL Tunnel",
+      "type": "local",
+      "sourcePort": 3306,
+      "destAddr": "localhost",
+      "destPort": 3306
+    },
+    {
+      "id": 2,
+      "hostId": 3,
+      "nickname": "Redis Tunnel",
+      "type": "local",
+      "sourcePort": 6379,
+      "destAddr": "localhost",
+      "destPort": 6379
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+# Sample SSH config for testing SSHConfigConverter4ConnectBot
+# This file demonstrates various SSH config options and their conversion
+
+# Simple host configuration
+Host webserver
+    HostName web.example.com
+    User admin
+    Port 22
+
+# Host with compression enabled
+Host dbserver
+    HostName db.example.com
+    User dbadmin
+    Port 3322
+    Compression yes
+
+# Host using a jump server (ProxyJump)
+Host internal-server
+    HostName 192.168.1.100
+    User developer
+    ProxyJump bastion
+
+# Bastion/Jump host
+Host bastion
+    HostName jump.example.com
+    User jumpuser
+    Port 2222
+
+# Host with port forwarding
+Host tunnel-server
+    HostName tunnel.example.com
+    User tunneluser
+    LocalForward 3306 localhost:3306
+    LocalForward 6379 redis.internal:6379
+    RemoteForward 8080 localhost:80
+
+# Host with identity file specified
+Host github
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github
+
+# These options will be ignored (not supported by ConnectBot)
+Host ignored-options-demo
+    HostName demo.example.com
+    User demo
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+    StrictHostKeyChecking no
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h-%p
+    ControlPersist 600
