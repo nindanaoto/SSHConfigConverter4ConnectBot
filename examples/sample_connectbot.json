@@ -1,20 +1,14 @@
 {
-  "version": 6,
+  "version": 7,
   "profiles": [
     {
       "id": 1,
       "name": "Default",
-      "fontName": "monospace",
-      "fontSize": 12,
-      "foregroundIndex": 7,
-      "backgroundIndex": 0,
-      "cursorBlinkEnabled": true,
-      "bellEnabled": true,
-      "bellVolume": 0.5,
-      "bellVibrate": true,
+      "colorSchemeId": -1,
+      "fontSize": 10,
+      "delKey": "del",
       "encoding": "UTF-8",
-      "keyboardProfile": "builtin_default",
-      "defaultKey": "builtin_default"
+      "emulation": "xterm-256color"
     }
   ],
   "hosts": [
@@ -26,8 +20,6 @@
       "hostname": "prod.example.com",
       "port": 22,
       "useKeys": 1,
-      "useAuthAgent": "no",
-      "postLogin": null,
       "pubkeyId": -1,
       "wantSession": 1,
       "compression": 0,
@@ -36,7 +28,8 @@
       "scrollbackLines": 140,
       "useCtrlAltAsMetaKey": 0,
       "jumpHostId": 2,
-      "profileId": 1
+      "profileId": 1,
+      "ipVersion": "IPV4_AND_IPV6"
     },
     {
       "id": 2,
@@ -46,8 +39,6 @@
       "hostname": "bastion.example.com",
       "port": 2222,
       "useKeys": 1,
-      "useAuthAgent": "no",
-      "postLogin": null,
       "pubkeyId": -1,
       "wantSession": 1,
       "compression": 1,
@@ -55,8 +46,8 @@
       "quickDisconnect": 0,
       "scrollbackLines": 140,
       "useCtrlAltAsMetaKey": 0,
-      "jumpHostId": null,
-      "profileId": 1
+      "profileId": 1,
+      "ipVersion": "IPV4_AND_IPV6"
     },
     {
       "id": 3,
@@ -66,8 +57,6 @@
       "hostname": "staging-db.example.com",
       "port": 22,
       "useKeys": 1,
-      "useAuthAgent": "no",
-      "postLogin": null,
       "pubkeyId": -1,
       "wantSession": 1,
       "compression": 0,
@@ -75,8 +64,8 @@
       "quickDisconnect": 0,
       "scrollbackLines": 140,
       "useCtrlAltAsMetaKey": 0,
-      "jumpHostId": null,
-      "profileId": 1
+      "profileId": 1,
+      "ipVersion": "IPV4_AND_IPV6"
     }
   ],
   "port_forwards": [
@@ -86,7 +75,6 @@
       "nickname": "MySQL Tunnel",
       "type": "local",
       "sourcePort": 3306,
-      "destAddr": "localhost",
       "destPort": 3306
     },
     {
@@ -95,7 +83,6 @@
       "nickname": "Redis Tunnel",
       "type": "local",
       "sourcePort": 6379,
-      "destAddr": "localhost",
       "destPort": 6379
     }
   ]

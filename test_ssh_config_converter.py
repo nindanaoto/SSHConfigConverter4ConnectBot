@@ -623,7 +623,8 @@ class TestConnectBotJsonWriter(unittest.TestCase):
 
         # internal should have jumpHostId pointing to bastion (id=2)
         self.assertEqual(result["hosts"][0]["jumpHostId"], 2)
-        self.assertIsNone(result["hosts"][1]["jumpHostId"])
+        # bastion has no jump host, so jumpHostId should be omitted
+        self.assertNotIn("jumpHostId", result["hosts"][1])
 
     def test_write_port_forwards(self):
         """Test writing hosts with port forwards."""
@@ -692,6 +693,52 @@ class TestConnectBotJsonWriter(unittest.TestCase):
 
         self.assertIsInstance(host["useCtrlAltAsMetaKey"], int)
         self.assertEqual(host["useCtrlAltAsMetaKey"], 0)
+
+    def test_write_omits_null_fields(self):
+        """Test that nullable fields are omitted when not set."""
+        hosts = [
+            SSHHost(
+                nickname="myserver",
+                hostname="example.com",
+                # use_auth_agent defaults to "no", post_login defaults to None
+                # proxy_jump defaults to None
+            )
+        ]
+
+        result = json.loads(self.writer.write(hosts))
+        host = result["hosts"][0]
+
+        self.assertNotIn("useAuthAgent", host)
+        self.assertNotIn("postLogin", host)
+        self.assertNotIn("jumpHostId", host)
+
+    def test_write_includes_nullable_fields_when_set(self):
+        """Test that nullable fields are included when they have values."""
+        hosts = [
+            SSHHost(
+                nickname="myserver",
+                hostname="example.com",
+                use_auth_agent="yes",
+                post_login="echo hello",
+                proxy_jump="bastion",
+            ),
+            SSHHost(nickname="bastion", hostname="bastion.com"),
+        ]
+
+        result = json.loads(self.writer.write(hosts))
+        host = result["hosts"][0]
+
+        self.assertEqual(host["useAuthAgent"], "yes")
+        self.assertEqual(host["postLogin"], "echo hello")
+        self.assertEqual(host["jumpHostId"], 2)
+
+    def test_write_includes_ip_version(self):
+        """Test that ipVersion field is included (schema v7)."""
+        hosts = [SSHHost(nickname="myserver", hostname="example.com")]
+
+        result = json.loads(self.writer.write(hosts))
+
+        self.assertEqual(result["hosts"][0]["ipVersion"], "IPV4_AND_IPV6")
 
     def test_write_includes_default_profile(self):
         """Test that output includes default profile."""
@@ -875,8 +922,8 @@ Host internal
 """
         result = json.loads(convert_ssh_config_to_connectbot(ssh_config))
 
-        # Jump host ID should be None since reference doesn't exist
-        self.assertIsNone(result["hosts"][0]["jumpHostId"])
+        # Jump host ID should be omitted since reference doesn't exist
+        self.assertNotIn("jumpHostId", result["hosts"][0])
 
     def test_empty_ssh_config(self):
         """Test conversion of empty SSH config."""

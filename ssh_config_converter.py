@@ -360,8 +360,6 @@ class ConnectBotJsonWriter:
                 "hostname": host.hostname if host.hostname else host.nickname,
                 "port": host.port,
                 "useKeys": int(host.use_keys),
-                "useAuthAgent": host.use_auth_agent,
-                "postLogin": host.post_login,
                 "pubkeyId": -1,  # No key reference from ssh_config
                 "wantSession": int(host.want_session),
                 "compression": int(host.compression),
@@ -369,9 +367,18 @@ class ConnectBotJsonWriter:
                 "quickDisconnect": int(host.quick_disconnect),
                 "scrollbackLines": host.scrollback_lines,
                 "useCtrlAltAsMetaKey": int(host.use_ctrl_alt_as_meta_key),
-                "jumpHostId": jump_host_id,
-                "profileId": 1
+                "profileId": 1,
+                "ipVersion": "IPV4_AND_IPV6"
             }
+
+            # Only include nullable fields when they have values
+            if host.use_auth_agent and host.use_auth_agent != "no":
+                host_json["useAuthAgent"] = host.use_auth_agent
+            if host.post_login:
+                host_json["postLogin"] = host.post_login
+            if jump_host_id is not None:
+                host_json["jumpHostId"] = jump_host_id
+
             hosts_json.append(host_json)
 
         # Build port forwards array
@@ -385,9 +392,10 @@ class ConnectBotJsonWriter:
                     "nickname": pf.nickname,
                     "type": pf.forward_type,
                     "sourcePort": pf.source_port,
-                    "destAddr": pf.dest_addr,
                     "destPort": pf.dest_port
                 }
+                if pf.dest_addr:
+                    pf_json["destAddr"] = pf.dest_addr
                 port_forwards_json.append(pf_json)
                 pf_id += 1
 
