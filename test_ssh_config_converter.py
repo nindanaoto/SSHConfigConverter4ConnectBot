@@ -493,8 +493,8 @@ class TestConnectBotJsonParser(unittest.TestCase):
         self.assertEqual(len(hosts), 1)
         self.assertEqual(hosts[0].nickname, "ssh-host")
 
-    def test_parse_compression(self):
-        """Test parsing compression setting."""
+    def test_parse_compression_as_bool(self):
+        """Test parsing compression setting with JSON boolean."""
         json_data = {
             "version": 6,
             "profiles": [],
@@ -515,6 +515,62 @@ class TestConnectBotJsonParser(unittest.TestCase):
         hosts, _ = self.parser.parse(json.dumps(json_data))
 
         self.assertTrue(hosts[0].compression)
+
+    def test_parse_compression_as_integer(self):
+        """Test parsing compression setting with integer (as ConnectBot exports)."""
+        json_data = {
+            "version": 6,
+            "profiles": [],
+            "hosts": [
+                {
+                    "id": 1,
+                    "nickname": "compressed",
+                    "protocol": "ssh",
+                    "hostname": "example.com",
+                    "username": "user",
+                    "port": 22,
+                    "compression": 1
+                }
+            ],
+            "port_forwards": []
+        }
+
+        hosts, _ = self.parser.parse(json.dumps(json_data))
+
+        self.assertTrue(hosts[0].compression)
+
+    def test_parse_booleans_as_integers(self):
+        """Test parsing all boolean fields as integers (ConnectBot export format)."""
+        json_data = {
+            "version": 6,
+            "profiles": [],
+            "hosts": [
+                {
+                    "id": 1,
+                    "nickname": "intbools",
+                    "protocol": "ssh",
+                    "hostname": "example.com",
+                    "username": "user",
+                    "port": 22,
+                    "useKeys": 1,
+                    "wantSession": 1,
+                    "compression": 0,
+                    "stayConnected": 0,
+                    "quickDisconnect": 0,
+                    "useCtrlAltAsMetaKey": 0
+                }
+            ],
+            "port_forwards": []
+        }
+
+        hosts, _ = self.parser.parse(json.dumps(json_data))
+
+        self.assertTrue(hosts[0].use_keys)
+        self.assertTrue(hosts[0].want_session)
+        self.assertFalse(hosts[0].compression)
+        self.assertFalse(hosts[0].stay_connected)
+        self.assertFalse(hosts[0].quick_disconnect)
+        self.assertFalse(hosts[0].use_ctrl_alt_as_meta_key)
 
     def test_parse_empty_hosts(self):
         """Test parsing JSON with no hosts."""
@@ -598,7 +654,44 @@ class TestConnectBotJsonWriter(unittest.TestCase):
 
         result = json.loads(self.writer.write(hosts))
 
-        self.assertTrue(result["hosts"][0]["compression"])
+        self.assertEqual(result["hosts"][0]["compression"], 1)
+
+    def test_write_booleans_as_integers(self):
+        """Test that all boolean fields are written as integers (0/1) not true/false."""
+        hosts = [
+            SSHHost(
+                nickname="myserver",
+                hostname="example.com",
+                use_keys=True,
+                want_session=True,
+                compression=False,
+                stay_connected=False,
+                quick_disconnect=False,
+                use_ctrl_alt_as_meta_key=False,
+            )
+        ]
+
+        result = json.loads(self.writer.write(hosts))
+        host = result["hosts"][0]
+
+        self.assertIsInstance(host["useKeys"], int)
+        self.assertNotIsInstance(host["useKeys"], bool)
+        self.assertEqual(host["useKeys"], 1)
+
+        self.assertIsInstance(host["wantSession"], int)
+        self.assertEqual(host["wantSession"], 1)
+
+        self.assertIsInstance(host["compression"], int)
+        self.assertEqual(host["compression"], 0)
+
+        self.assertIsInstance(host["stayConnected"], int)
+        self.assertEqual(host["stayConnected"], 0)
+
+        self.assertIsInstance(host["quickDisconnect"], int)
+        self.assertEqual(host["quickDisconnect"], 0)
+
+        self.assertIsInstance(host["useCtrlAltAsMetaKey"], int)
+        self.assertEqual(host["useCtrlAltAsMetaKey"], 0)
 
     def test_write_includes_default_profile(self):
         """Test that output includes default profile."""
@@ -648,7 +741,7 @@ Host webserver
         self.assertEqual(len(result["hosts"]), 1)
         self.assertEqual(result["hosts"][0]["nickname"], "webserver")
         self.assertEqual(result["hosts"][0]["hostname"], "web.example.com")
-        self.assertTrue(result["hosts"][0]["compression"])
+        self.assertEqual(result["hosts"][0]["compression"], 1)
 
     def test_connectbot_to_ssh_config(self):
         """Test full ConnectBot to SSH config conversion."""

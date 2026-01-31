@@ -272,14 +272,14 @@ class ConnectBotJsonParser:
                 hostname=raw_host.get('hostname', ''),
                 username=raw_host.get('username', ''),
                 port=raw_host.get('port', 22),
-                compression=raw_host.get('compression', False),
-                use_keys=raw_host.get('useKeys', True),
+                compression=bool(raw_host.get('compression', 0)),
+                use_keys=bool(raw_host.get('useKeys', 1)),
                 use_auth_agent=raw_host.get('useAuthAgent', 'no'),
-                want_session=raw_host.get('wantSession', True),
-                stay_connected=raw_host.get('stayConnected', False),
-                quick_disconnect=raw_host.get('quickDisconnect', False),
+                want_session=bool(raw_host.get('wantSession', 1)),
+                stay_connected=bool(raw_host.get('stayConnected', 0)),
+                quick_disconnect=bool(raw_host.get('quickDisconnect', 0)),
                 scrollback_lines=raw_host.get('scrollbackLines', 140),
-                use_ctrl_alt_as_meta_key=raw_host.get('useCtrlAltAsMetaKey', False),
+                use_ctrl_alt_as_meta_key=bool(raw_host.get('useCtrlAltAsMetaKey', 0)),
                 post_login=raw_host.get('postLogin'),
             )
 
@@ -325,17 +325,11 @@ class ConnectBotJsonWriter:
     DEFAULT_PROFILE = {
         "id": 1,
         "name": "Default",
-        "fontName": "monospace",
-        "fontSize": 12,
-        "foregroundIndex": 7,
-        "backgroundIndex": 0,
-        "cursorBlinkEnabled": True,
-        "bellEnabled": True,
-        "bellVolume": 0.5,
-        "bellVibrate": True,
+        "colorSchemeId": -1,
+        "fontSize": 10,
+        "delKey": "del",
         "encoding": "UTF-8",
-        "keyboardProfile": "builtin_default",
-        "defaultKey": "builtin_default"
+        "emulation": "xterm-256color"
     }
 
     def __init__(self):
@@ -365,16 +359,16 @@ class ConnectBotJsonWriter:
                 "username": host.username,
                 "hostname": host.hostname if host.hostname else host.nickname,
                 "port": host.port,
-                "useKeys": host.use_keys,
+                "useKeys": int(host.use_keys),
                 "useAuthAgent": host.use_auth_agent,
                 "postLogin": host.post_login,
                 "pubkeyId": -1,  # No key reference from ssh_config
-                "wantSession": host.want_session,
-                "compression": host.compression,
-                "stayConnected": host.stay_connected,
-                "quickDisconnect": host.quick_disconnect,
+                "wantSession": int(host.want_session),
+                "compression": int(host.compression),
+                "stayConnected": int(host.stay_connected),
+                "quickDisconnect": int(host.quick_disconnect),
                 "scrollbackLines": host.scrollback_lines,
-                "useCtrlAltAsMetaKey": host.use_ctrl_alt_as_meta_key,
+                "useCtrlAltAsMetaKey": int(host.use_ctrl_alt_as_meta_key),
                 "jumpHostId": jump_host_id,
                 "profileId": 1
             }
