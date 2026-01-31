@@ -320,7 +320,7 @@ class ConnectBotJsonParser:
 class ConnectBotJsonWriter:
     """Writer for ConnectBot's JSON export format."""
 
-    SCHEMA_VERSION = 6
+    SCHEMA_VERSION = 7
 
     DEFAULT_PROFILE = {
         "id": 1,

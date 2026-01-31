@@ -605,7 +605,7 @@ class TestConnectBotJsonWriter(unittest.TestCase):
 
         result = json.loads(self.writer.write(hosts))
 
-        self.assertEqual(result["version"], 6)
+        self.assertEqual(result["version"], 7)
         self.assertEqual(len(result["hosts"]), 1)
         self.assertEqual(result["hosts"][0]["nickname"], "myserver")
         self.assertEqual(result["hosts"][0]["hostname"], "example.com")
